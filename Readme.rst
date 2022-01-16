@@ -3,7 +3,7 @@
 (Creative Commons Attribution-Noncommercial-No Derivative Works 3.0 License, Author Wonder Waffle https://www.deviantart.com/wonder-waffle/art/ACK-ACK-Mars-Attacks-359710975 )
 
 
-|pypi| |release| |downloads| |python_versions| |pypi_versions| |coverage| |actions|
+|pypi| |release| |downloads| |python_versions| |pypi_versions| |actions|
 
 .. |pypi| image:: https://img.shields.io/pypi/l/ackack
 .. |release| image:: https://img.shields.io/librariesio/release/pypi/ackack
