@@ -1,5 +1,20 @@
 <html>
   <head>
+    <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"></link>
+    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
+    <style>
+     kbd { border: 1px solid gray; font-size: 1.2em; box-shadow: 1px 0 1px 0 #eee, 0 2px 0 2px #ccc, 0 2px 0 3px #444; border-radius: 3px; margin: 3px 3px; padding: 10px 10px 0px 10px;}
+     .video-js.vjs-fluid, .video-js.vjs-16-9, .video-js.vjs-4-3, .video-js.vjs-9-16, .video-js.vjs-1-1 {
+         width: 100%;
+         max-width: 60%;
+         height: 0;
+         max-height: 80%;
+         float: left;
+         margin-right: 13px;
+     }
+    </style>
+    <script src="https://unpkg.com/video.js/dist/video.js"></script>
+    <script src="https://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
     <script src="https://unpkg.com/axios@0.21.2/dist/axios.js"></script>
     <script>
       function move(pos){ axios.get(`/move/?movement=${pos}`); }
@@ -7,29 +22,31 @@
       window.onkeydown = function(ev){ let code = MAPS[ev.keyCode]; if (code){ move(code); } }
       window.addEventListener('load', function() { videojs('cam').play(); });
     </script>
-    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
-    <style>
-    .video-js{
-      width: 80%;
-      max-width: 80%;
-      height: 0;
-    }
-    </style>
-    <script src="https://unpkg.com/video.js/dist/video.js"></script>
-    <script src="https://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
   </head>
   <body>
     <video id="cam" class="video-js vjs-fluid vjs-default-skin" controls preload="auto" data-setup='{}'>
       <source src="/static/playlist.m3u8" type="application/x-mpegURL">
     </video>
     <div>
-	<button onclick="move('left')">Left</button>
-	<button onclick="move('up')">Up</button>
-	<button onclick="move('right')">Right</button>
-	<button onclick="move('down')">Down</button>
-	<button onclick="move('turn_on')">Clean</button>
-	<button onclick="move('turn_off')">Home</button>
-	<button onclick="move('stop')">Stop</button>
+	<h1>AckBot</h1>
+	<h4>(Ack! Ack!)</h4>
+        <p>Setup a hacked yi-ants camera on top of your weback robot</p>
+	<p>You can drive it with your keyboard arrow keys or this virtual keyboard below</p>
+        <div style="margin-bottom:10px; margin-top:10px">
+            <kbd onclick="move('turn_on')"><i class="fa fa-play" aria-hidden="true"></i></kbd>
+            <kbd onclick="move('up')"><i class="fa fa-arrow-up" aria-hidden="true"></i></kbd>
+            <kbd onclick="move('top')"><i class="fa fa-stop" aria-hidden="true"></i></kbd>
+        </div>
+        <div style="margin-bottom:10px">
+            <kbd onclick="move('left')"><i class="fa fa-arrow-left" aria-hidden="true"></i></kbd>
+            <kbd onclick="move('down')"><i class="fa fa-arrow-down" aria-hidden="true"></i></kbd>
+            <kbd onclick="move('right')"><i class="fa fa-arrow-right" aria-hidden="true"></i></kbd>
+        </div>
+
+	<div>
+            <kbd style="padding: 10px 56px 0px 56px;" onclick="move('turn_off')"><i class="fa fa-home" aria-hidden="true"></i></kbd>
+        </div>
+
     </div>
 
     <script>
