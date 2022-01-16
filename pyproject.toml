@@ -1,8 +1,10 @@
 [tool.poetry]
-name = "bot"
+name = "ackack"
 version = "0.1.0"
 description = ""
 authors = ["David Francos <opensource@davidfrancos.net>"]
+readme = 'Readme.rst'
+
 
 [tool.poetry.dependencies]
 python = "^3.9"
