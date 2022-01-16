@@ -12,7 +12,7 @@
 .. |downloads| image:: https://img.shields.io/pypi/dm/ackack
 .. |python_versions| image:: https://img.shields.io/pypi/pyversions/ackack
 .. |pypi_versions| image:: https://img.shields.io/pypi/v/ackack
-.. |actions| image:: https://github.com/XayOn/ackack/workflows/CI%20commit/badge.svg
+.. |actions| image:: https://github.com/XayOn/ackack/workflows/build.yml/badge.svg
     :target: https://github.com/XayOn/ackack/actions
 
 
