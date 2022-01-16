@@ -1,6 +1,8 @@
-.. image:: ./docs/ackack.jpg
+.. figure:: ./docs/ackack.jpg
+   :width: 200px
 
-(Creative Commons Attribution-Noncommercial-No Derivative Works 3.0 License, Author Wonder Waffle https://www.deviantart.com/wonder-waffle/art/ACK-ACK-Mars-Attacks-359710975 )
+   (Creative Commons Attribution-Noncommercial-No Derivative Works 3.0 License, Author Wonder Waffle https://www.deviantart.com/wonder-waffle/art/ACK-ACK-Mars-Attacks-359710975 )
+
 
 
 |pypi| |release| |downloads| |python_versions| |pypi_versions| |actions|
@@ -40,16 +42,14 @@ Usually, this will be your phone + the password you use on the control app.
 Besides that, only RTSP_URL is required.
 
 
-===============  ====================================
+===============  =====================================
 KEY               Description
-===============  ====================================
-
+===============  =====================================
 RTSP_URL         Yi camera's RTSP stream URL 
 WEBACK_USERNAME  Your weback's username (phone number)
 WEBACK_PASSWORD  Your weback's password
 BASE_URL         Base URL, for reverse proxies
-
-===============  ====================================
+===============  =====================================
 
 
 Installation
