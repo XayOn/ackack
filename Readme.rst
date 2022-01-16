@@ -1,4 +1,4 @@
-.. image:: ./docs/ackack.png
+.. image:: ./docs/ackack.jpg
 
 (Creative Commons Attribution-Noncommercial-No Derivative Works 3.0 License, Author Wonder Waffle https://www.deviantart.com/wonder-waffle/art/ACK-ACK-Mars-Attacks-359710975 )
 
