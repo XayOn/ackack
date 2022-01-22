@@ -55,14 +55,16 @@ class CustomRobot(CleanRobot):
 #: Setup BASE URL
 BASE = os.getenv('BASE_URL', '')
 RPRE = {'prefix': BASE} if os.getenv('BASE_URL') else {}
-print(f"Starting with parameters {RPRE}")
 router = APIRouter(**RPRE)
 
 app = FastAPI()
 
 # Distribute statics (vuejs app)
 app.mount(f"{BASE}/static", StaticFiles(directory="static"), name="main")
-robot = init_robot(os.getenv('WEBACK_USERNAME'), os.getenv('WEBACK_PASSWORD'))
+robot = None
+if __name__ == "__main__":
+    print(f"Starting with parameters {RPRE}")
+    robot = init_robot(os.getenv('WEBACK_USERNAME'), os.getenv('WEBACK_PASSWORD'))
 
 
 @router.get("/", response_class=HTMLResponse)
