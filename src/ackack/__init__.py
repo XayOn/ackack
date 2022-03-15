@@ -15,6 +15,10 @@ def init_robot(user, pwd):
     return CustomRobot(client.device_list()[0]['Thing_Name'], client)
 
 
+class Status:
+    robot = None
+
+
 class CustomRobot(CleanRobot):
     """Extend cleanrobot to allow movements"""
 
@@ -61,10 +65,11 @@ app = FastAPI()
 
 # Distribute statics (vuejs app)
 app.mount(f"{BASE}/static", StaticFiles(directory="static"), name="main")
-robot = None
+
 if __name__ == "__main__":
     print(f"Starting with parameters {RPRE}")
-    robot = init_robot(os.getenv('WEBACK_USERNAME'), os.getenv('WEBACK_PASSWORD'))
+    Status.robot = init_robot(os.getenv('WEBACK_USERNAME'),
+                              os.getenv('WEBACK_PASSWORD'))
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -75,15 +80,19 @@ async def index():
 @router.get("/move/")
 async def move(movement: str = Query(None)):
     """Move robot"""
+    if not Status.robot:
+        Status.robot = init_robot(os.getenv('WEBACK_USERNAME'),
+                                  os.getenv('WEBACK_PASSWORD'))
+
     if not movement:
         return []
 
     if movement in ('left', 'right', 'up', 'down', 'back'):
-        robot.move(movement)
+        Status.robot.move(movement)
     else:
         # Don't do the whole "move, wait 1s, stop moving" except on positional
         # movements
-        getattr(robot, movement)()
+        getattr(Status.robot, movement)()
     return {"status": "sent"}
 
 
