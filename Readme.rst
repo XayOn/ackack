@@ -12,8 +12,7 @@
 .. |downloads| image:: https://img.shields.io/pypi/dm/ackack
 .. |python_versions| image:: https://img.shields.io/pypi/pyversions/ackack
 .. |pypi_versions| image:: https://img.shields.io/pypi/v/ackack
-.. |actions| image:: https://github.com/XayOn/ackack/workflows/build.yml/badge.svg
-    :target: https://github.com/XayOn/ackack/actions
+.. |actions| image:: https://github.com/XayOn/ackack/workflows/build.yml/badge.svg 
 
 
 **Have fun with your vaccuum robot!**
@@ -48,7 +47,7 @@ KEY               Description
 ACKACK_RTSP_URI  Yi camera's RTSP stream URL 
 ACKACK_USERNAME  Your weback's username (phone number)
 ACKACK_PASS      Your weback's password
-BASE_URL         Base URL, for reverse proxies
+BASE             Base URL, for reverse proxies
 FORGETFUL        Use forgetful to recognize faces/objects
 FORGETFUL_URL    Forgetful's full face search URL
 ===============  =========================================
@@ -91,7 +90,7 @@ Setting base_url is useful in reverse proxy scenarios (like traefik).
           ACKACK_PASS: yourpassword 
           ACKACK_FORGETFUL=true
           ACKACK_FORGETFUL_URI=http://localhost:8001/faces/search/
-          BASE_URL: /ackack
+          BASE: /ackack
 
 
 Manual setup

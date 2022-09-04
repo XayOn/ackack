@@ -1,41 +1,44 @@
 FROM python:3.10-bullseye as build
+
+RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+
 WORKDIR /app
 ENV PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_PATH=/opt/poetry \
-    VENV_PATH=/opt/venv \
-    POETRY_VERSION=1.1.4
-
-RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime
-ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
+    VENV_PATH=/app/.venv \
+    PATH="/root/.local/bin:$VENV_PATH/bin:$PATH"
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y curl build-essential \
-    && curl -sSL https://install.python-poetry.org | python3 - \
-    && mv /root/.poetry $POETRY_PATH \
-    && poetry --version && python -m venv $VENV_PATH \
-    && poetry config virtualenvs.create false \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml ./
-COPY poetry.lock ./
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    poetry config virtualenvs.in-project true
+
+COPY pyproject.toml poetry.lock /app/
+RUN poetry install --no-root --no-interaction --no-ansi
+
+FROM python:3.10-bullseye as runtime
+WORKDIR /app
+
+COPY --from=build /root/.local/share/pypoetry /root/.local/share/pypoetry 
+COPY --from=build /root/.local/bin/poetry /root/.local/bin/poetry
+COPY --from=build $VENV_PATH $VENV_PATH
+
+ENV PATH="/root/.local/bin:$VENV_PATH/bin:$PATH"
+RUN poetry config virtualenvs.in-project true
+
+COPY pyproject.toml poetry.lock /app/
+
 RUN poetry install --no-dev --no-root
 COPY . ./
 RUN poetry install --no-dev
 
-FROM python:3.9.1-slim as runtime
-
 RUN echo "deb https://www.deb-multimedia.org stable main non-free" > /etc/apt/sources.list.d/dmo.list 
 RUN apt-get update -oAcquire::AllowInsecureRepositories=true \
-    && apt-get install -y ffmpeg || apt install -f \
+    && apt-get install -y --allow-unauthenticated ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-
-ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
-COPY --from=build $VENV_PATH $VENV_PATH
-COPY --from=build /app/ /app/
-
 EXPOSE 8000
-WORKDIR /app
 CMD "/app/docker-entrypoint.sh"
