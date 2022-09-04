@@ -116,4 +116,4 @@ integration: https://github.com/agustin-e/weback-home-assistant-component
 
 Finally it uses ffmpeg to re-encode into a hls-compatible stream the yi
 camera's RTSP, and serves a websocket-based interface to put everything
-togheter.
+togheter..
