@@ -22,7 +22,7 @@ class CustomRobot(CleanRobot):
         """Move for one second each pos"""
         logger.info(f'Moving to {pos}')
         if pos in ('left', 'right', 'front', 'back', 'stop'):
-            self.publish_single('working_status', 'Move{pos.capitalize()}')
+            self.publish_single('working_status', f'Move{pos.capitalize()}')
             sleep(1)
             logger.info(f'Stopping from {pos}')
             return self.stop()
