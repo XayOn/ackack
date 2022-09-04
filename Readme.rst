@@ -42,14 +42,28 @@ Usually, this will be your phone + the password you use on the control app.
 Besides that, only RTSP_URL is required.
 
 
-===============  =====================================
+===============  =========================================
 KEY               Description
-===============  =====================================
-RTSP_URL         Yi camera's RTSP stream URL 
-WEBACK_USERNAME  Your weback's username (phone number)
-WEBACK_PASSWORD  Your weback's password
+===============  =========================================
+ACKACK_RTSP_URI  Yi camera's RTSP stream URL 
+ACKACK_USERNAME  Your weback's username (phone number)
+ACKACK_PASS      Your weback's password
 BASE_URL         Base URL, for reverse proxies
-===============  =====================================
+FORGETFUL        Use forgetful to recognize faces/objects
+FORGETFUL_URL    Forgetful's full face search URL
+===============  =========================================
+
+
+For example:
+
+.. code:: bash 
+
+    ACKACK_RTSP_URI=rtsp://192.168.1.121:554/ch0_1.h264 \
+    ACKACK_USER="+34-123123123" \
+    ACKACK_PASS="yourpass" \
+    ACKACK_FORGETFUL=true \
+    ACKACK_FORGETFUL_URI=http://localhost:8001/faces/search/ \
+    poetry run uvicorn --host="0.0.0.0" ackack:app --port=8081
 
 
 Installation
@@ -72,32 +86,35 @@ Setting base_url is useful in reverse proxy scenarios (like traefik).
         ports:
           - 8080:8080
         environment:
-          RTSP_URL: http://192.168.1...
-          WEBACK_USERNAME: +33-123123123
-          WEBACK_PASSWORD: yourpassword 
+          ACKACK_RTSP_URI: http://192.168.1...
+          ACKACK_USERNAME: +33-123123123
+          ACKACK_PASS: yourpassword 
+          ACKACK_FORGETFUL=true
+          ACKACK_FORGETFUL_URI=http://localhost:8001/faces/search/
           BASE_URL: /ackack
 
 
 Manual setup
 ++++++++++++
 
-Install the project, set your environment variables, launch ffmpeg to create a
-m3u8 file in static/playlist.m3u8 from your rtsp.
-
-Requires ffmpeg. Check your distro's instructions on how to install ffmpeg
-You can checkout docker-entrypoint.sh and use its ffmpeg command
+Install the project, set your environment variables, run uvicorn.
+Requires ffmpeg. Check your distro's instructions on how to install ffmpeg.
+Docker image comes with ffmpeg built-in
 
 .. code:: bash
 
    pip install ackack
-   WEBACK_USERNAME="+34-XXXX" WEBACK_PASSWORD="XXXX" poetry run uvicorn ackack:app
+   ACKACK_USERNAME="+34-XXXX" ACKACK_PASS="XXXX" ACKACK_RTSP_URI=XXX poetry run uvicorn ackack:app
 
 
-How does it work?
------------------
+How does it work? / Acknowledgments
+-------------------------------------
 
-Ackack is simply an API for movement commands on python's `weback unofficial
-library <https://github.com/opravdin/weback-unofficial>`_, with an interface in
-plain html + js (with just videojs, minimal), paired with an ffmpeg command
-that converts the rtsp output of the yi camera to a format playable by your
-browser.
+Ackack works as a standalone web interface to control your WeBack robot.
+
+Its weback interface is based on agustin-e's work on homeassistant
+integration: https://github.com/agustin-e/weback-home-assistant-component
+
+Finally it uses ffmpeg to re-encode into a hls-compatible stream the yi
+camera's RTSP, and serves a websocket-based interface to put everything
+togheter.

@@ -42,7 +42,8 @@ async def forever_ffmpeg():
 async def startup():
     """Setup robot and cam reading."""
     logger.info(f'Setting up weback ({CONFIG["user"]})')
-    app.state.robot = CustomRobot.with_login(CONFIG['user'], CONFIG['pass'])
+    app.state.robot = CustomRobot()
+    await app.state.robot.login(CONFIG['user'], CONFIG['pass'])
     logger.info(f'Setting up ffmpeg {FFMPEG_CMD}')
     app.state.ffmpeg = await asyncio.create_subprocess_shell(FFMPEG_CMD)
     logger.info(f'Setting up cam ({CONFIG["rtsp_uri"]})')
@@ -69,13 +70,8 @@ async def send_data_from_cam(websocket):
 async def send_data_from_vacuum(websocket):
     """Request periodically vacuum status."""
     while True:
-        app.state.robot.update()
-        await websocket.send_json({
-            'robot_state': {
-                'state': app.state.robot.state,
-                'mode': app.state.robot.current_mode
-            }
-        })
+        await app.state.robot.update_status()
+        await websocket.send_json({'robot_state': app.state.robot.status})
         await asyncio.sleep(3)
 
 
@@ -86,7 +82,7 @@ async def handle_movements(websocket):
         cmd = await websocket.receive_json()
         logger.info(f'received json {cmd}')
         await websocket.send_json(
-            {"status": app.state.robot.move(cmd['action'])})
+            {"status": await app.state.robot.move(cmd['action'])})
 
 
 @app.websocket("/ws")

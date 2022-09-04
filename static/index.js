@@ -36,12 +36,29 @@ customElements.define('kbd-ctlr', KBDItem);
 
 class AckStatus {
 	constructor() {
-		this.robot_status = "unknown";
+		this.robot_status = {};
 		this.forgetful_status = "";
 	};
 	update_status(data) {
 		if (data.robot_state) {
-			this.robot_status = `${data.robot_state.state} (${data.robot_state.mode})`;
+			const st = data.robot_state;
+			let battery_by_percentage = 'fa-battery-empty';
+			if (st.battery_level > 50) {
+				battery_by_percentage = 'fa-battery-half';
+			}
+			if (st.battery_level > 75) {
+				battery_by_percentage = 'fa-battery-three_quarters';
+			}
+			if (st.battery_level > 90) {
+				battery_by_percentage = 'fa-battery-full';
+			}
+
+			this.robot_status = {
+				'state': st.working_status,
+				'fan': st.fan_status.toLowerCase(),
+				'battery_status': st.working_status == 'PileCharging' ? 'fa-bolt' : battery_by_percentage,
+				'battery_percentage': st.battery_level
+			}
 		}
 		if (data.objects) {
 			if (data.objects.detail) {
@@ -50,7 +67,12 @@ class AckStatus {
 				this.forgetful_status = data.objects.result.join(' - ');
 			}
 		}
-		document.querySelector('#state').innerHTML = `${this.robot_status} - ${this.forgetful_status}`;
+
+		document.querySelector('#yolo').innerHTML = this.forgetful_status;
+		document.querySelector('#status').innerHTML = this.robot_status.state;
+		document.querySelector('#fan').classList = [`fa fa-fan fan-${this.robot_status.fan}`]
+		document.querySelector('#battery_status').classList = [`fa ${this.robot_status.battery_status}`]
+		document.querySelector('#battery_percentage').innerHTML = this.robot_status.battery_percentage;
 
 	}
 }

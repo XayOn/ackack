@@ -1,35 +1,44 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"></link>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script>window.base_url = "BASE_";</script>
-    <script src="./static/index.js"></script>
-    <link rel=stylesheet href="./static/index.css">
-  </head>
-  
-  <body>
-    <video id="video" muted></video>
-    <div class=container>
-      <div class=home-controls>
-        <kbd-ctlr action=turn-on icon=play key=Enter></kbd-ctlr>
-        <kbd-ctlr action=stop key=Esc icon=stop class=key-center></kbd-ctlr>
-        <kbd-ctlr action=turn-off icon=home key=Backspace></kbd-ctlr>
+<head>
+  <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  </link>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>window.base_url = "BASE_";</script>
+  <script src="./static/index.js"></script>
+  <link rel=stylesheet href="./static/index.css">
+</head>
+
+<body>
+  <video id="video" muted></video>
+  <div id="yolo"></div>
+  <div class=container>
+    <div class=keys>
+      <div class=arrows-top>
+        <kbd-ctlr action=front key=ArrowUp icon=circle-up class=key-only></kbd-ctlr>
       </div>
-      <div class=keys>
-        <div class=arrows-top>
-          <kbd-ctlr action=front key=ArrowUp class=key-only></kbd-ctlr>
-        </div>
-  
-        <div class=arrows-bottom>
-          <kbd-ctlr action=left key=ArrowLeft" icon=arrow-left></kbd-ctlr>
-          <kbd-ctlr action=back key=ArrowDown icon=arrow-down></kbd-ctlr>
-          <kbd-ctlr action=right key=ArrowRight icon=arrow-right></kbd-ctlr>
-        </div>
+
+      <div class=arrows-bottom>
+        <kbd-ctlr action=left key=ArrowLeft" icon=circle-left></kbd-ctlr>
+        <kbd-ctlr action=back key=ArrowDown icon=circle-down></kbd-ctlr>
+        <kbd-ctlr action=right key=ArrowRight icon=circle-right></kbd-ctlr>
       </div>
     </div>
-    <div id=state></div>
-  </body>
+  </div>
+  <div class=status-line>
+    <div class=left>
+      <kbd-ctlr action=AutoClean icon=play key=Enter></kbd-ctlr>
+      <kbd-ctlr action=StandBy key=Esc icon=stop class=key-center></kbd-ctlr>
+      <kbd-ctlr action=BackCharging icon=home key=Backspace></kbd-ctlr>
+      <span id="fan" class="fa fa-fan"></span>
+    </div>
+    <div class=right>
+      <span id="battery_status"></span>
+      <span id="battery_percentage"></span>
+      <span id="status"></span>
+    </div>
+  </div>
+</body>
 
 </html>

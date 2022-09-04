@@ -484,6 +484,19 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "websocket-client"
+version = "1.4.0"
+description = "WebSocket client for Python with low level API options"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+test = ["websockets"]
+optional = ["wsaccel", "python-socks"]
+docs = ["sphinx-rtd-theme (>=0.5)", "Sphinx (>=3.4)"]
+
+[[package]]
 name = "websockets"
 version = "10.3"
 description = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
@@ -520,7 +533,7 @@ game = ["PyQt5"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "b86c5d3fd46a16c290b4faf6f23b366dd6f1a6a98236316b687d955df045e5fb"
+content-hash = "b5f6fcaf66b1763a60ac2d7a43a24ceecbad4fa8be8377962a24aa87a18308f4"
 
 [metadata.files]
 aiohttp = [
@@ -1006,6 +1019,10 @@ uvicorn = [
 weback-unofficial = [
     {file = "weback-unofficial-0.3.5.tar.gz", hash = "sha256:b63967ca76be7d4873a415ebec2460210f0be9326087d4043223576febcb1b9b"},
     {file = "weback_unofficial-0.3.5-py3-none-any.whl", hash = "sha256:8c835c9fc5867f10a5c30bbd53299b5f7dd6087b12da9cd82eee13b46b0b4702"},
+]
+websocket-client = [
+    {file = "websocket-client-1.4.0.tar.gz", hash = "sha256:79d730c9776f4f112f33b10b78c8d209f23b5806d9a783e296b3813fc5add2f1"},
+    {file = "websocket_client-1.4.0-py3-none-any.whl", hash = "sha256:33ad3cf0aef4270b95d10a5a66b670a66be1f5ccf10ce390b3644f9eddfdca9d"},
 ]
 websockets = [
     {file = "websockets-10.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:661f641b44ed315556a2fa630239adfd77bd1b11cb0b9d96ed8ad90b0b1e4978"},

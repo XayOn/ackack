@@ -24,11 +24,6 @@
   background: lightgrey;
 }
 
-.home-controls {
-  margin-bottom: 10px;
-  margin-top: 10px;
-}
-
 .key-center {
   padding-left: 10px;
   padding-right: 10px;
@@ -55,4 +50,54 @@
   left: 20px;
   background: black;
   color: white;
+}
+
+.fan-pause {
+  --fa-animation-duration: 0;
+}
+
+.fan-quiet {
+  --fa-animation-duration: 2s;
+}
+
+.fan-normal {
+  --fa-animation-duration: 1s;
+}
+
+.fan-strong {
+  --fa-animation-duration: 0.1s;
+}
+
+.status-line {
+  width: 100%;
+  background: black;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
+.right {
+  float: right;
+  position: fixed;
+  right: 40px;
+}
+
+.left {
+  float: left;
+}
+
+.left kbd-ctlr {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#yolo {
+  border-radius: 2px;
+  position: fixed;
+  z-index: 1000;
+  background: lightgray;
+  padding: 10px;
+  right: 50px;
+  top: 10px;
 }
