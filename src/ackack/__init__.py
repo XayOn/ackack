@@ -1,99 +1,105 @@
 import os
 from time import sleep
+import asyncio
 from pathlib import Path
+from loguru import logger
 
-from fastapi import FastAPI, Query, APIRouter
+from fastapi import FastAPI, APIRouter, WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from weback_unofficial.client import WebackApi
-from weback_unofficial.vacuum import CleanRobot
 
-
-def init_robot(user, pwd):
-    client = WebackApi(user, pwd)
-    client.get_session()
-    return CustomRobot(client.device_list()[0]['Thing_Name'], client)
-
-
-class Status:
-    robot = None
-
-
-class CustomRobot(CleanRobot):
-    """Extend cleanrobot to allow movements"""
-
-    def move_left(self):
-        """Left"""
-        return self.publish_single('working_status', 'MoveLeft')
-
-    def move_right(self):
-        """Right"""
-        return self.publish_single('working_status', 'MoveRight')
-
-    def move_up(self):
-        """Up, actually front.
-
-        This will move frontally, wich is the only non-rotating movement
-        """
-        return self.publish_single('working_status', 'MoveFront')
-
-    def move_back(self):
-        """Back, rotate 180 degrees"""
-        return self.publish_single('working_status', 'MoveBack')
-
-    def move_down(self):
-        """Down key, back movement."""
-        return self.move_back()
-
-    def move_stop(self):
-        """Stop any current movement"""
-        return self.publish_single('working_status', 'MoveStop')
-
-    def move(self, position):
-        """Move for one second each position"""
-        getattr(self, f'move_{position}')()
-        sleep(1)
-        getattr(self, 'move_stop')()
-
-
-#: Setup BASE URL
-BASE = os.getenv('BASE_URL', '')
-RPRE = {'prefix': BASE} if os.getenv('BASE_URL') else {}
-router = APIRouter(**RPRE)
+from .robot import CustomRobot
+from .camera import RTSPCam
 
 app = FastAPI()
+CONFIG = {
+    k[7:].lower(): v
+    for k, v in os.environ.items() if k.startswith('ACKACK_')
+}
 
-# Distribute statics (vuejs app)
+#: Setup BASE URL
+BASE = CONFIG.get('base', '')
+router = APIRouter(**({'prefix': BASE} if BASE else {}))
 app.mount(f"{BASE}/static", StaticFiles(directory="static"), name="main")
 
-if __name__ == "__main__":
-    print(f"Starting with parameters {RPRE}")
-    Status.robot = init_robot(os.getenv('WEBACK_USERNAME'),
-                              os.getenv('WEBACK_PASSWORD'))
+FFMPEG_CMD = ' '.join([
+    "ffmpeg", "-hide_banner", "-loglevel", "fatal", '-rtsp_transport', 'tcp',
+    '-flags', '-global_header', '-i', CONFIG["rtsp_uri"], '-an', '-c:v',
+    'copy', '-b:v', '2048k', '-f', 'hls', '-lhls', '1', '-hls_time 1',
+    '-hls_wrap', '5', '-hls_segment_type', 'fmp4',
+    f"{Path('static').absolute()}/stream.m3u8"
+])
+
+
+async def forever_ffmpeg():
+    while True:
+        proc = await asyncio.create_subprocess_shell(' '.join(FFMPEG_CMD))
+        logger.info(await proc.communicate())
+        sleep(3)
+
+
+@app.on_event('startup')
+async def startup():
+    """Setup robot and cam reading."""
+    logger.info(f'Setting up weback ({CONFIG["user"]})')
+    app.state.robot = CustomRobot.with_login(CONFIG['user'], CONFIG['pass'])
+    logger.info(f'Setting up ffmpeg {FFMPEG_CMD}')
+    app.state.ffmpeg = await asyncio.create_subprocess_shell(FFMPEG_CMD)
+    logger.info(f'Setting up cam ({CONFIG["rtsp_uri"]})')
+    app.state.cam = RTSPCam(CONFIG['rtsp_uri'], CONFIG.get('forgetful_uri'))
+    await app.state.cam.__aenter__()
 
 
 @router.get("/", response_class=HTMLResponse)
 async def index():
-    return Path('static/index.html').read_text()
+    return Path('static/index.html').read_text().replace('BASE_', BASE or '')
 
 
-@router.get("/move/")
-async def move(movement: str = Query(None)):
-    """Move robot"""
-    if not Status.robot:
-        Status.robot = init_robot(os.getenv('WEBACK_USERNAME'),
-                                  os.getenv('WEBACK_PASSWORD'))
+async def send_data_from_cam(websocket):
+    """If forgetful is enabled, send recognized objects via ws."""
+    logger.info('starting send data from cam')
+    if not CONFIG.get('forgetful'):
+        return
+    async for objects in app.state.cam:
+        logger.info('received object in data from cam')
+        logger.info(f'Sending detected objects ({objects}) to client')
+        await websocket.send_json({'objects': objects.json()})
 
-    if not movement:
-        return []
 
-    if movement in ('left', 'right', 'up', 'down', 'back'):
-        Status.robot.move(movement)
-    else:
-        # Don't do the whole "move, wait 1s, stop moving" except on positional
-        # movements
-        getattr(Status.robot, movement)()
-    return {"status": "sent"}
+async def send_data_from_vacuum(websocket):
+    """Request periodically vacuum status."""
+    while True:
+        app.state.robot.update()
+        await websocket.send_json({
+            'robot_state': {
+                'state': app.state.robot.state,
+                'mode': app.state.robot.current_mode
+            }
+        })
+        await asyncio.sleep(3)
+
+
+async def handle_movements(websocket):
+    """Request robot movements to mqtt weback service."""
+    logger.info('waiting for movements')
+    while True:
+        cmd = await websocket.receive_json()
+        logger.info(f'received json {cmd}')
+        await websocket.send_json(
+            {"status": app.state.robot.move(cmd['action'])})
+
+
+@app.websocket("/ws")
+async def ws_endpoint(ws: WebSocket):
+    """Main websocket endpoint.
+
+    Fires two coroutines: `handle_movements` and `send_data_from_cam`
+    """
+    logger.info('received ws request')
+    await ws.accept()
+    logger.info('starting coroutines')
+    await asyncio.gather(handle_movements(ws), send_data_from_cam(ws),
+                         send_data_from_vacuum(ws))
 
 
 app.include_router(router)

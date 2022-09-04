@@ -13,6 +13,11 @@ boto3 = "^1.20.31"
 fastapi = "^0.71.0"
 uvicorn = "^0.16.0"
 PyQt5 = {version = "^5.15.6", optional = true, extras = ["game"]}
+aiohttp = "^3.8.1"
+rtsp = "^1.1.12"
+loguru = "^0.6.0"
+httpx = "^0.23.0"
+websockets = "^10.3"
 
 [tool.poetry.dev-dependencies]
 
