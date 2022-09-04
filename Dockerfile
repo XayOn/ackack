@@ -12,7 +12,7 @@ ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y curl build-essential \
-    && curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python \
+    && curl -sSL https://install.python-poetry.org | python3 - \
     && mv /root/.poetry $POETRY_PATH \
     && poetry --version && python -m venv $VENV_PATH \
     && poetry config virtualenvs.create false \
