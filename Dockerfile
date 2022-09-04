@@ -1,4 +1,4 @@
-FROM python:3.9.1-slim as build
+FROM python:3.11-slim-bullseye as build
 WORKDIR /app
 ENV PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
@@ -11,7 +11,7 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 ENV PATH="$POETRY_PATH/bin:$VENV_PATH/bin:$PATH"
 
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y curl build-essential\
+    && apt-get install --no-install-recommends -y curl build-essential \
     && curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python \
     && mv /root/.poetry $POETRY_PATH \
     && poetry --version && python -m venv $VENV_PATH \
@@ -26,8 +26,9 @@ RUN poetry install --no-dev
 
 FROM python:3.9.1-slim as runtime
 
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y ffmpeg \
+RUN echo "deb https://www.deb-multimedia.org stable main non-free" > /etc/apt/sources.list.d/dmo.list 
+RUN apt-get update -oAcquire::AllowInsecureRepositories=true \
+    && apt-get install -y ffmpeg || apt install -f \
     && rm -rf /var/lib/apt/lists/*
 
 
