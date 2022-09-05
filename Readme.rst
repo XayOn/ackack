@@ -21,7 +21,7 @@ AckAck is a simple control API to manually controll weback vacuum robots.
 Paired with its web interface, and a RTPS (in my case, I'm using an old yi ants
 camera with `yi-hack <https://github.com/fritz-smh/yi-hack>`_)
 
-This way you can remotely-scare your cats! 
+It was born to monitor my cats when I'm on vacation :wink:
 
 .. image:: ./docs/screenshot.png
 

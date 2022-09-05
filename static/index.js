@@ -1,6 +1,8 @@
 /* Define kbd custom element */
 
-const webSocket = new WebSocket(`ws://${window.location.host}${window.base_url}/ws`);
+const proto = window.location.protocol == 'https:' ? 'wss' : 'ws';
+
+const webSocket = new WebSocket(`${proto}://${window.location.host}${window.base_url}/ws`);
 
 class KBDItem extends HTMLElement {
 
@@ -23,7 +25,8 @@ class KBDItem extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.setAttribute('class', `${this.getAttribute('class')} fa fa-${this.icon}`);
+		this.setAttribute('class', `${this.getAttribute('class')} material-icons`);
+		this.innerHTML = this.icon;
 		document.addEventListener('keyup', (ev) => {
 			if (ev.key == this.key) { this.activate(); }
 		});
@@ -86,6 +89,8 @@ webSocket.onmessage = (event) => {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+	const elems = document.querySelectorAll('.fixed-action-btn');
+	M.FloatingActionButton.init(elems, {});
 	const container = document.getElementById('video');
 	const Hls = window.Hls;
 	if (Hls.isSupported()) {
