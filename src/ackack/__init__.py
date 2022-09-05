@@ -85,7 +85,7 @@ async def handle_movements(websocket):
             {"status": await app.state.robot.move(cmd['action'])})
 
 
-@app.websocket("/ws")
+@router.websocket(f"{BASE}/ws")
 async def ws_endpoint(ws: WebSocket):
     """Main websocket endpoint.
 
