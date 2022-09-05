@@ -95,11 +95,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	const Hls = window.Hls;
 	if (Hls.isSupported()) {
 		var hls = new Hls();
-		hls.loadSource('/static/stream.m3u8');
+		hls.loadSource(`${window.base_url}/static/stream.m3u8');
 		hls.attachMedia(container);
 		hls.on(Hls.Events.MANIFEST_PARSED, function() { container.play(); });
 	} else if (container.canPlayType('application/vnd.apple.mpegurl')) {
-		container.src = '/static/stream.m3u8';
+		container.src = '${window.base_url}/static/stream.m3u8';
 		container.addEventListener('canplay', function() { container.play(); });
 	}
 });
